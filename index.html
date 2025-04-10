@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지산손해사정 백경인손해사정사의 경상합의금 산출예</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .checkbox-label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .checkbox-label input {
+            margin-right: 8px;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+            width: 200px;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .result-container {
+            margin-top: 30px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 6px;
+            display: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .total-row {
+            font-weight: bold;
+            background-color: #e8f4fc !important;
+        }
+        .expected-range {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f4fc;
+            border-left: 5px solid #3498db;
+            border-radius: 4px;
+        }
+        .header-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .company-logo {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #3498db;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #7f8c8d;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .treatment-section {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .treatment-days-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .treatment-input {
+            flex: 1;
+        }
+        .info-text {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        .future-treatment-info {
+            background-color: #f0f7fb;
+            padding: 12px;
+            border-left: 5px solid #3498db;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+        .injury-grade-section {
+            background-color: #f0f7fb;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .radio-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .radio-label input {
+            margin-right: 6px;
+        }
+        .formula {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #2c3e50;
+            font-style: italic;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            .treatment-days-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .radio-group {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <div class="company-logo">지산손해사정</div>
+            <h1>백경인손해사정사의 경상합의금 산출예</h1>
+        </div>
+
+        <div class="treatment-section">
+            <div class="treatment-days-container">
+                <div class="treatment-input">
+                    <div class="form-group">
+                        <label for="outpatientDays">통원 치료 일수:</label>
+                        <input type="number" id="outpatientDays" min="0" placeholder="예: 30일">
+                    </div>
+                </div>
+                <div class="treatment-input">
+                    <div class="form-group">
+                        <label for="hospitalizedDays">입원 치료 일수:</label>
+                        <input type="number" id="hospitalizedDays" min="0" placeholder="예: 7일">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="dailyIncome">일일 소득 (일당):</label>
+                <input type="number" id="dailyIncome" placeholder="예: 150,000원">
+                <div class="info-text">실제 적용되는 일당은 입력값의 85%가 적용됩니다.</div>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="useDailyWorkerWage"> 소득자료 없음 또는 일용근로자 임금 미달시 적용
+                </label>
+                <div class="info-text" id="dailyWorkerWageInfo">체크시 일용근로자 일당 산정액이 적용됩니다.</div>
+            </div>
+
+            <div class="injury-grade-section">
+                <label>상해 등급 선택 (위자료 산정용):</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="injuryGrade" value="12-14" checked> 12~14급 (150,000원)
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="injuryGrade" value="11"> 11급 (200,000원)
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="injuryGrade" value="higher"> 10급 이상 (별도 상담 필요)
+                    </label>
+                </div>
+                <div class="info-text">※ 10급 이상의 경우 경상이 아니므로 별도 상담이 필요합니다.</div>
+            </div>
+
+            <div class="future-treatment-info">
+                <p><strong>향후치료비 안내:</strong> 경상사고의 경우 향후치료비는 의학적으로 발생되지 않거나, 극도로 적기 때문에 실무상 담당자의 재량으로 처리되고 있습니다. 본 계산기에서는 합계 금액에 '+@'로 표시하여 담당자의 판단에 따라 추가될 수 있음을 나타냅니다.</p>
+                <p><strong>일용근로자 임금 계산 안내 (2025년 상반기 기준):</strong><br>
+                월 3,248,613원 = (공사부문 169,804원 + 제조부문 90,085원) / 2 × 25일<br>
+                일당 약 108,287원 = 3,248,613원 ÷ 30일 (85% 적용 시 약 92,044원)</p>
+                <p><strong>휴업손해 안내:</strong> 휴업손해는 입원 기간 동안만 발생하는 것으로 계산됩니다. 통원 치료 기간은 휴업손해 계산에 포함되지 않습니다.</p>
+            </div>
+        </div>
+
+        <button class="btn" onclick="calculateSettlement()">합의금 계산하기</button>
+
+        <div id="results" class="result-container">
+            <h2>경상합의금 산출 결과</h2>
+            <table>
+                <tr>
+                    <th>항목</th>
+                    <th>계산식</th>
+                    <th>금액 (원)</th>
+                </tr>
+                <tr>
+                    <td>1. 휴업손해</td>
+                    <td id="lossOfIncomeFormula">계산 중...</td>
+                    <td id="lossOfIncome">0</td>
+                </tr>
+                <tr>
+                    <td>2. 기타손해배상금</td>
+                    <td id="otherCompensationFormula">계산 중...</td>
+                    <td id="otherCompensation">0</td>
+                </tr>
+                <tr>
+                    <td>3. 위자료</td>
+                    <td id="consolationMoneyFormula">계산 중...</td>
+                    <td id="consolationMoney">0</td>
+                </tr>
+                <tr>
+                    <td>4. 향후치료비</td>
+                    <td>담당자 재량</td>
+                    <td id="futureTreatment">담당자 재량 (+@)</td>
+                </tr>
+                <tr class="total-row">
+                    <td>5. 합계</td>
+                    <td>1 + 2 + 3 + 4</td>
+                    <td id="totalAmount">0 (+@)</td>
+                </tr>
+            </table>
+
+            <div class="expected-range">
+                <h3>6. 통상적인 합의금의 범위</h3>
+                <p id="expectedRange">산출 중...</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>※ 본 계산기는 참고용으로 실제 합의금액은 다양한 요소에 따라 달라질 수 있습니다.</p>
+            <p>※ 향후치료비는 담당자의 재량에 따라 결정되므로 실제 합의 시 추가될 수 있습니다.</p>
+            <p>※ 10급 이상의 상해는 경상이 아니므로 별도 상담이 필요합니다.</p>
+            <p>© 2025 지산손해사정 백경인손해사정사</p>
+        </div>
+    </div>
+
+    <script>
+        // 페이지 로드 시 일용근로자 일당 정보 업데이트
+        // 2025년 상반기 일용근로자 임금 계산: (공사부문 169,804원 + 제조부문 90,085원) / 2 × 25일 = 3,248,613원
+        // 일당 계산 시에는 월 임금을 30일로 나눔
+        const dailyWorkerWage = 3248613 / 30; // 일 단위로 환산 (약 108,287원)
+        document.getElementById('dailyWorkerWageInfo').textContent = `체크시 일용근로자 일당 (${formatNumber(Math.round(dailyWorkerWage))}원)의 85%인 ${formatNumber(Math.round(dailyWorkerWage * 0.85))}원이 적용됩니다.`;
+
+        function calculateSettlement() {
+            // 입력값 가져오기
+            const outpatientDays = parseInt(document.getElementById('outpatientDays').value) || 0;
+            const hospitalizedDays = parseInt(document.getElementById('hospitalizedDays').value) || 0;
+            const inputDailyIncome = parseInt(document.getElementById('dailyIncome').value) || 0;
+            const useDailyWorkerWage = document.getElementById('useDailyWorkerWage').checked;
+            const injuryGrade = document.querySelector('input[name="injuryGrade"]:checked').value;
+            
+            // 총 치료일수
+            const totalTreatmentDays = outpatientDays + hospitalizedDays;
+            
+            if (totalTreatmentDays === 0) {
+                alert('통원 또는 입원 치료 일수를 입력해주세요.');
+                return;
+            }
+            
+            // 일당 계산 (일용근로자 임금 또는 입력값의 85%)
+            // 2025년 상반기 일용근로자 임금: (공사부문 169,804원 + 제조부문 90,085원) / 2 × 25일 = 3,248,613원
+            // 일당 계산 시에는 월 임금을 30일로 나눔
+            const dailyWorkerWage = 3248613 / 30; // 일 단위로 환산 (약 108,287원)
+            
+            let dailyIncome = 0;
+            let dailyIncomeBeforeReduction = 0;
+            
+            if (useDailyWorkerWage) {
+                dailyIncomeBeforeReduction = Math.round(dailyWorkerWage);
+                dailyIncome = Math.round(dailyWorkerWage * 0.85);
+            } else {
+                dailyIncomeBeforeReduction = inputDailyIncome;
+                dailyIncome = Math.round(inputDailyIncome * 0.85);
+            }
+            
+            // 계산
+            // 1. 휴업손해: 하루 수입 감소액 x 85% x 입원일수 (입원일수만 적용)
+            const lossOfIncome = dailyIncome * hospitalizedDays;
+            const lossOfIncomeFormula = `${formatNumber(dailyIncomeBeforeReduction)}원 × 85% × 입원 ${hospitalizedDays}일 = ${formatNumber(dailyIncome)}원 × ${hospitalizedDays}일`;
+            
+            // 2. 기타손해배상금: 8,000원 x 통원일수
+            const otherCompensation = 8000 * outpatientDays;
+            const otherCompensationFormula = `8,000원 × ${outpatientDays}일`;
+            
+            // 3. 위자료 계산
+            let consolationMoney = 0;
+            let consolationMoneyFormula = "";
+            
+            if (injuryGrade === "12-14") {
+                consolationMoney = 150000;
+                consolationMoneyFormula = "12~14급 상해 위자료: 150,000원";
+            } else if (injuryGrade === "11") {
+                consolationMoney = 200000;
+                consolationMoneyFormula = "11급 상해 위자료: 200,000원";
+            } else {
+                consolationMoney = 0;
+                consolationMoneyFormula = "10급 이상 상해는 별도 상담 필요";
+            }
+            
+            // 5. 합계 (향후치료비는 담당자 재량이므로 +@로 표시)
+            const totalAmount = lossOfIncome + otherCompensation + consolationMoney;
+            
+            // 6. 통상적인 합의금의 범위
+            let expectedRangeText = "";
+            if (hospitalizedDays > 0) {
+                expectedRangeText = `입원 치료가 포함된 경우, 통상적인 합의금 범위는 약 100만원 ~ 250만원입니다. 현재 계산된 합의금(${formatNumber(totalAmount)}원 +@)과 비교하여 참고하세요.`;
+            } else {
+                expectedRangeText = `통원 치료만 있는 경우, 통상적인 합의금 범위는 약 50만원 ~ 100만원 초반입니다. 현재 계산된 합의금(${formatNumber(totalAmount)}원 +@)과 비교하여 참고하세요.`;
+            }
+            
+            // 결과 표시
+            document.getElementById('lossOfIncomeFormula').textContent = lossOfIncomeFormula;
+            document.getElementById('lossOfIncome').textContent = formatNumber(lossOfIncome);
+            
+            document.getElementById('otherCompensationFormula').textContent = otherCompensationFormula;
+            document.getElementById('otherCompensation').textContent = formatNumber(otherCompensation);
+            
+            document.getElementById('consolationMoneyFormula').textContent = consolationMoneyFormula;
+            document.getElementById('consolationMoney').textContent = formatNumber(consolationMoney);
+            
+            document.getElementById('totalAmount').textContent = formatNumber(totalAmount) + " (+@)";
+            document.getElementById('expectedRange').textContent = expectedRangeText;
+            
+            // 결과 컨테이너 표시
+            document.getElementById('results').style.display = 'block';
+        }
+        
+        // 숫자 형식화 함수 (천 단위 콤마)
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+    </script>
+</body>
+</html>
