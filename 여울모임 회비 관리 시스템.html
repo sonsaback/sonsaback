@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>모임 회비 관리 시스템</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            border: 2px solid #e3e8ff;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .control-group input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .control-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .member-card {
+            background: white;
+            border: 2px solid #e8ecf4;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .member-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-color: #3498db;
+        }
+
+        .member-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .months-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .month-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 4px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .month-item.current-month {
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3); }
+            50% { box-shadow: 0 6px 16px rgba(255, 107, 107, 0.5); }
+            100% { box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3); }
+        }
+
+        .month-item label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #7f8c8d;
+        }
+
+        .month-item.current-month label {
+            color: white;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .month-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: #27ae60;
+            cursor: pointer;
+            transform: scale(1.2);
+        }
+
+        .special-options {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .annual-payment {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .annual-payment input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #e74c3c;
+            cursor: pointer;
+        }
+
+        .annual-payment label {
+            font-weight: 600;
+            color: #e74c3c;
+            font-size: 14px;
+        }
+
+        .special-note {
+            flex: 1;
+            display: flex;
+            gap: 8px;
+        }
+
+        .special-note input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .special-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: #f39c12;
+            cursor: pointer;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+
+        .output {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-line;
+            border: 3px solid #34495e;
+            margin-top: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .members-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .months-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>모임 회비 관리 시스템</h1>
+            <p>회원별 납부 현황을 체크하고 공지문을 자동 생성하세요</p>
+        </div>
+        
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="totalFunds">현재 회비 총액 (원)</label>
+                    <input type="number" id="totalFunds" value="2568766" placeholder="현재 보유 총액">
+                </div>
+                <div class="control-group">
+                    <label for="monthlyFee">월 회비 (원)</label>
+                    <input type="number" id="monthlyFee" value="20000" placeholder="월 회비 금액">
+                </div>
+            </div>
+
+            <div class="stats" id="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalMembers">14</div>
+                    <div class="stat-label">총 회원 수</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="unpaidAmount">0</div>
+                    <div class="stat-label">미납액 (원)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="expectedTotal">0</div>
+                    <div class="stat-label">예상 총액 (원)</div>
+                </div>
+            </div>
+
+            <div class="members-grid" id="membersGrid"></div>
+
+            <button class="generate-btn" onclick="generateNotice()">공지문 생성</button>
+            
+            <div class="output" id="output">여기에 생성된 공지문이 표시됩니다.</div>
+        </div>
+    </div>
+
+    <script>
+        const members = [
+            { name: '한찬우', paid: [] },
+            { name: '이신화', paid: [], annual: true },
+            { name: '안찬혁', paid: [1] },
+            { name: '정승민', paid: [], annual: true },
+            { name: '오승훈', paid: [1, 2, 3, 4, 5, 6, 7] },
+            { name: '김영민', paid: [1, 2, 3, 4, 5, 6] },
+            { name: '이재헌', paid: [1, 2, 3, 4, 5, 6] },
+            { name: '백경인', paid: [1, 2, 3, 4, 5, 6, 7] },
+            { name: '김민우', paid: [1, 2, 3, 4, 5, 6, 7] },
+            { name: '연승흠', paid: [1, 2, 3] },
+            { name: '김희승', paid: [1, 2, 3, 4, 5, 6] },
+            { name: '문종호', paid: [1, 2, 3, 4, 5, 6, 7] },
+            { name: '박시후', paid: [1, 2, 3, 4], special: true, note: '[2,3,4,5,6,7,8,9,10,11,12,1,2]월 28만원 미납\n(괄호기간 향후 회의예정)' },
+            { name: '회원추가', paid: [] }
+        ];
+
+        const months = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+
+        function renderMembers() {
+            const grid = document.getElementById('membersGrid');
+            grid.innerHTML = '';
+            const currentMonth = new Date().getMonth() + 1; // 현재 월 (1-12)
+
+            members.forEach((member, memberIndex) => {
+                const card = document.createElement('div');
+                card.className = 'member-card';
+                
+                card.innerHTML = `
+                    <div class="member-name">
+                        <input type="text" value="${member.name}" 
+                               onchange="updateMemberName(${memberIndex}, this.value)"
+                               style="border: none; background: none; font-size: 18px; font-weight: 700; color: #2c3e50; width: 100%;">
+                    </div>
+                    
+                    <div class="months-grid">
+                        ${months.map((month, monthIndex) => `
+                            <div class="month-item ${monthIndex + 1 === currentMonth ? 'current-month' : ''}">
+                                <label>${month}</label>
+                                <input type="checkbox" class="month-checkbox" 
+                                       ${member.paid.includes(monthIndex + 1) ? 'checked' : ''}
+                                       onchange="toggleMonth(${memberIndex}, ${monthIndex + 1})"
+                                       ${member.annual ? 'disabled' : ''}>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="special-options">
+                        <div class="annual-payment">
+                            <input type="checkbox" ${member.annual ? 'checked' : ''} 
+                                   onchange="toggleAnnual(${memberIndex})">
+                            <label>연납완료</label>
+                        </div>
+                        <div class="special-note">
+                            <input type="checkbox" class="special-checkbox" 
+                                   ${member.special ? 'checked' : ''}
+                                   onchange="toggleSpecial(${memberIndex})">
+                            <input type="text" placeholder="특이사항 입력" 
+                                   value="${member.note || ''}"
+                                   onchange="updateNote(${memberIndex}, this.value)">
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function updateMemberName(index, name) {
+            members[index].name = name;
+            updateStats();
+        }
+
+        function toggleMonth(memberIndex, month) {
+            const member = members[memberIndex];
+            if (member.paid.includes(month)) {
+                member.paid = member.paid.filter(m => m !== month);
+            } else {
+                member.paid.push(month);
+                member.paid.sort((a, b) => a - b);
+            }
+            updateStats();
+        }
+
+        function toggleAnnual(memberIndex) {
+            const member = members[memberIndex];
+            member.annual = !member.annual;
+            if (member.annual) {
+                member.paid = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+            } else {
+                member.paid = [];
+            }
+            renderMembers();
+            updateStats();
+        }
+
+        function toggleSpecial(memberIndex) {
+            members[memberIndex].special = !members[memberIndex].special;
+        }
+
+        function updateNote(memberIndex, note) {
+            members[memberIndex].note = note;
+        }
+
+        function addMember() {
+            members.push({ name: '새 회원', paid: [] });
+            renderMembers();
+            updateStats();
+        }
+
+        function updateStats() {
+            const monthlyFee = parseInt(document.getElementById('monthlyFee').value) || 20000;
+            const totalFunds = parseInt(document.getElementById('totalFunds').value) || 0;
+            
+            let totalUnpaid = 0;
+            const currentMonth = new Date().getMonth() + 1; // 현재 월 기준
+            
+            members.forEach(member => {
+                if (member.name === '회원추가') return;
+                
+                if (member.annual) {
+                    // 연납 완료자는 미납액 없음
+                } else {
+                    const shouldHavePaid = currentMonth;
+                    const actuallyPaid = member.paid.length;
+                    const unpaidMonths = shouldHavePaid - actuallyPaid;
+                    totalUnpaid += unpaidMonths * monthlyFee;
+                }
+            });
+
+            const expectedTotal = totalFunds + totalUnpaid;
+            
+            document.getElementById('totalMembers').textContent = members.filter(m => m.name !== '회원추가').length;
+            document.getElementById('unpaidAmount').textContent = totalUnpaid.toLocaleString();
+            document.getElementById('expectedTotal').textContent = expectedTotal.toLocaleString();
+        }
+
+        function generateNotice() {
+            const monthlyFee = parseInt(document.getElementById('monthlyFee').value) || 20000;
+            const totalFunds = parseInt(document.getElementById('totalFunds').value) || 0;
+            const currentMonth = 7;
+            const today = new Date();
+            const timeString = `${today.getHours()}시 ${today.getMinutes()}분`;
+            
+            let notice = `[${currentMonth}월 회비 현황] ${today.getDate()}일 기준 - 오전 ${timeString}\n`;
+            
+            let totalUnpaid = 0;
+            
+            members.forEach(member => {
+                if (member.name === '회원추가') return;
+                
+                if (member.annual) {
+                    notice += `${member.name} 연납 완료\n`;
+                } else {
+                    const unpaidMonths = [];
+                    for (let month = 1; month <= currentMonth; month++) {
+                        if (!member.paid.includes(month)) {
+                            unpaidMonths.push(month);
+                        }
+                    }
+                    
+                    if (unpaidMonths.length === 0) {
+                        notice += `${member.name} ${currentMonth}월 완료\n`;
+                    } else if (unpaidMonths.length === currentMonth) {
+                        const unpaidAmount = unpaidMonths.length * monthlyFee;
+                        notice += `${member.name} ${unpaidMonths.map(m => m + '월').join(',')} ${(unpaidAmount / 10000)}만원 미납\n`;
+                        totalUnpaid += unpaidAmount;
+                    } else {
+                        const paidMonths = currentMonth - unpaidMonths.length;
+                        const unpaidAmount = unpaidMonths.length * monthlyFee;
+                        notice += `${member.name} ${unpaidMonths.map(m => m + '월').join(',')} ${(unpaidAmount / 10000)}만원 미납\n`;
+                        totalUnpaid += unpaidAmount;
+                    }
+                }
+                
+                if (member.special && member.note) {
+                    notice += `${member.note}\n`;
+                }
+            });
+            
+            notice += `-----------------------------\n`;
+            notice += `[현재 회비 총액 ${totalFunds.toLocaleString()}원]\n`;
+            notice += `미납액 : ${Math.round(totalUnpaid / 10000)}만원`;
+            
+            document.getElementById('output').textContent = notice;
+        }
+
+        // 초기 렌더링
+        renderMembers();
+        updateStats();
+        generateNotice();
+
+        // 입력 필드 변경 시 통계 업데이트
+        document.getElementById('totalFunds').addEventListener('input', updateStats);
+        document.getElementById('monthlyFee').addEventListener('input', updateStats);
+    </script>
+</body>
+</html>
